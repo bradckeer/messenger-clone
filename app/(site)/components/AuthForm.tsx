@@ -1,5 +1,6 @@
 'use client';
 
+import axios from "axios";
 import { useCallback, useState } from "react";
 import { 
     FieldValues, 
@@ -12,6 +13,8 @@ import { BsGithub, BsGoogle } from "react-icons/bs";
 import Input from "../../components/inputs/Input";
 import Button from "@/app/components/Button";
 import AuthSocialButton from "./AuthSocialButton";
+import { toast } from "react-hot-toast";
+import { signIn } from "next-auth/react";
 
 
 type Variant = 'LOGIN' | 'REGISTER';
@@ -45,32 +48,28 @@ export default function AuthForm() {
             
             if (variant === 'REGISTER') {
                 //Axios Register
-                fetch('https://jsonplaceholder.typicode.com/users', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-              .then(res => res.json())
-              .then(res => console.log(res))
-              .catch(err => console.log(err))
-              .finally(() => setIsLoading(false));
+                axios.post('/api/register', data)
+                .catch(()=>toast.error('Something went wrong!'))
+                .finally(()=>setIsLoading(false));
             };
 
             if (variant === 'LOGIN') {
                 //NextAuth SignIn
-                fetch('https://jsonplaceholder.typicode.com/users', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
+                signIn('credentials', {
+                    ...data,
+                    redirect: false
                 })
-             .then(res => res.json())
-             .then(res => console.log(res))
-             .catch(err => console.log(err))
-             .finally(() => setIsLoading(false))
+                .then((callback)=> {
+                    if (callback?.error) {
+                        setIsLoading(false);
+                        toast.error('Invalid credentials!');
+                    } 
+                    if(callback?.ok && !callback?.error) {
+                        setIsLoading(true);
+                        toast.success('Logged in!');
+                    }
+                })
+                .finally(()=>setIsLoading(false));
             };
         };
     
