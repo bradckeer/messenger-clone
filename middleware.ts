@@ -1,14 +1,14 @@
 import { withAuth } from "next-auth/middleware";
 
-export default withAuth({
+const middleware = withAuth({
   pages: {
     signIn: "/",
   },
 });
 
-export const config = { 
-  matcher: [
-    "/conversations/:path*",
-    "/users/:path*",
-  ]
+export default middleware;
+
+// Opcional: Exporta la configuración en un archivo next.config.js
+export const config = {
+  // Configuración específica de Next.js
 };
