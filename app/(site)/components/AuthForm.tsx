@@ -58,11 +58,7 @@ function AuthForm() {
         if (variant === 'REGISTER') {
             //Axios Register
             axios.post('/api/register', data)
-                .then(() => signIn('credentials', {
-                    ...data,
-                    redirect: false,
-                })
-                )
+                .then(() => signIn('credentials', data))
                 .then((callback) => {
                     if (callback?.error) {
                         toast.error('Invalid Credentials');
